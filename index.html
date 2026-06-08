@@ -6,133 +6,427 @@
   <title>⚔️ 던전 탈출 RPG</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background: #0d0d0d;
-      color: #e0e0e0;
-      font-family: 'Courier New', monospace;
+      background: #0a0a0f;
+      color: #c8c8d0;
+      font-family: 'Courier New', Courier, monospace;
+      height: 100dvh;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 40px 20px;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
     }
-    .container { max-width: 700px; width: 100%; }
-    h1 { font-size: 2rem; color: #f0c040; text-align: center; margin-bottom: 8px; }
-    .subtitle { text-align: center; color: #888; margin-bottom: 32px; }
-    .divider { border: none; border-top: 1px solid #333; margin: 24px 0; }
-    h2 { color: #f0c040; font-size: 1.1rem; margin-bottom: 12px; }
-    .card {
-      background: #1a1a1a;
-      border: 1px solid #333;
+
+    #game {
+      width: 100%;
+      max-width: 680px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Status bar */
+    #status {
+      background: #12121a;
+      border: 1px solid #2a2a3a;
       border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .monster-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-    }
-    .monster {
-      background: #111;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 12px;
-    }
-    .monster .name { font-weight: bold; color: #ff6b6b; margin-bottom: 6px; }
-    .monster .stat { color: #aaa; font-size: 0.85rem; }
-    .boss { border-color: #f0c040; }
-    .boss .name { color: #f0c040; }
-    .item-list { display: flex; flex-direction: column; gap: 10px; }
-    .item {
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      min-height: 46px;
       display: flex;
-      justify-content: space-between;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 6px;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .stat { display: flex; align-items: center; gap: 6px; }
+    .stat-label { color: #555; }
+    .hp-bar { letter-spacing: -1px; }
+
+    /* Output log */
+    #output {
+      flex: 1;
+      overflow-y: auto;
+      background: #0d0d14;
+      border: 1px solid #2a2a3a;
+      border-radius: 8px;
+      padding: 16px;
+      scroll-behavior: smooth;
+    }
+    #output::-webkit-scrollbar { width: 6px; }
+    #output::-webkit-scrollbar-track { background: #0d0d14; }
+    #output::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+
+    .line { line-height: 1.65; white-space: pre-wrap; }
+    .line + .line { margin-top: 1px; }
+    .c-gold    { color: #f0c040; }
+    .c-green   { color: #50e080; }
+    .c-red     { color: #ff5555; }
+    .c-blue    { color: #60b8ff; }
+    .c-gray    { color: #3a3a4a; }
+    .c-dim     { color: #666; }
+
+    /* Input area */
+    #input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #text-input {
+      display: none;
+      background: #12121a;
+      border: 1px solid #555;
+      color: #e0e0f0;
+      font-family: inherit;
+      font-size: 1rem;
       padding: 10px 14px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
     }
-    .item .iname { color: #6bc5ff; }
-    .item .price { color: #f0c040; }
-    .how-to {
-      line-height: 1.8;
-      color: #bbb;
+    #text-input:focus { border-color: #f0c040; }
+
+    #buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
-    .how-to li { margin-left: 20px; }
-    .footer { text-align: center; color: #555; font-size: 0.8rem; margin-top: 40px; }
+
+    button {
+      background: #12121a;
+      border: 1px solid #3a3a4a;
+      color: #c8c8d0;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 9px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover {
+      background: #1e1e2e;
+      border-color: #f0c040;
+      color: #f0c040;
+    }
+    button.btn-danger:hover {
+      border-color: #ff5555;
+      color: #ff5555;
+    }
+    button.btn-confirm {
+      border-color: #50e080;
+      color: #50e080;
+    }
+    button.btn-confirm:hover {
+      background: #0a1e12;
+      border-color: #50e080;
+      color: #50e080;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>⚔️ 던전 탈출 RPG</h1>
-    <p class="subtitle">어둠의 던전에서 보스를 쓰러트리고 탈출하라!</p>
-
-    <div class="card">
-      <h2>📖 게임 소개</h2>
-      <p class="how-to">
-        Python으로 만든 텍스트 기반 던전 탈출 RPG입니다.<br>
-        총 5개의 층을 돌파하고 최종 보스를 처치하면 승리합니다.
-      </p>
-    </div>
-
-    <div class="card">
-      <h2>🎮 플레이 방법</h2>
-      <ul class="how-to">
-        <li>각 층에서 <strong>전진 / 상점 방문 / 휴식</strong> 중 선택</li>
-        <li>전투 중 <strong>공격 / 강공격 / 도망</strong> 선택 가능</li>
-        <li>강공격은 50% 확률로 2배 데미지</li>
-        <li>상점에서 포션·무기 구매 가능</li>
-        <li>5층에서 던전 보스 격파 시 탈출 성공!</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h2>👾 몬스터</h2>
-      <div class="monster-grid">
-        <div class="monster">
-          <div class="name">슬라임</div>
-          <div class="stat">HP: 10 / ATK: 3</div>
-          <div class="stat">골드: 5G | 난이도: 약함</div>
-        </div>
-        <div class="monster">
-          <div class="name">고블린</div>
-          <div class="stat">HP: 18 / ATK: 6</div>
-          <div class="stat">골드: 12G | 난이도: 보통</div>
-        </div>
-        <div class="monster">
-          <div class="name">해골 전사</div>
-          <div class="stat">HP: 25 / ATK: 9</div>
-          <div class="stat">골드: 20G | 난이도: 강함</div>
-        </div>
-        <div class="monster">
-          <div class="name">독거미</div>
-          <div class="stat">HP: 20 / ATK: 12</div>
-          <div class="stat">골드: 18G | 난이도: 강함</div>
-        </div>
-        <div class="monster">
-          <div class="name">어둠의 마법사</div>
-          <div class="stat">HP: 30 / ATK: 15</div>
-          <div class="stat">골드: 35G | 난이도: 매우 강함</div>
-        </div>
-        <div class="monster boss">
-          <div class="name">💀 심연의 군주</div>
-          <div class="stat">HP: 80 / ATK: 20</div>
-          <div class="stat">골드: 100G | 최종 보스</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🏪 상점 아이템</h2>
-      <div class="item-list">
-        <div class="item"><span class="iname">💊 회복 포션</span><span>HP +20</span><span class="price">15G</span></div>
-        <div class="item"><span class="iname">⚡ 강화 포션</span><span>ATK +5</span><span class="price">25G</span></div>
-        <div class="item"><span class="iname">🗡️ 녹슨 검</span><span>ATK +8</span><span class="price">20G</span></div>
-        <div class="item"><span class="iname">🗡️ 강철 검</span><span>ATK +15</span><span class="price">40G</span></div>
-      </div>
-    </div>
-
-    <p class="footer">Built with Python · Deployed on Vercel</p>
+<div id="game">
+  <div id="status"></div>
+  <div id="output"></div>
+  <div id="input-wrap">
+    <input type="text" id="text-input" placeholder="이름을 입력하세요..." autocomplete="off" />
+    <div id="buttons"></div>
   </div>
+</div>
+
+<script>
+// ─── Game data (from example.py) ────────────────────────────────────────────
+const MONSTERS = [
+  {name:"슬라임",        hp:10, atk:3,  gold:5,  diff:"약함"},
+  {name:"고블린",        hp:18, atk:6,  gold:12, diff:"보통"},
+  {name:"해골 전사",     hp:25, atk:9,  gold:20, diff:"강함"},
+  {name:"독거미",        hp:20, atk:12, gold:18, diff:"강함"},
+  {name:"어둠의 마법사", hp:30, atk:15, gold:35, diff:"매우 강함"},
+];
+const BOSS = {name:"💀 심연의 군주", hp:80, atk:20, gold:100};
+const ITEMS = [
+  {name:"💊 회복 포션", type:"heal",   value:20, price:15},
+  {name:"⚡ 강화 포션", type:"attack", value:5,  price:25},
+  {name:"🗡️ 녹슨 검",   type:"weapon", value:8,  price:20},
+  {name:"🗡️ 강철 검",   type:"weapon", value:15, price:40},
+];
+
+// ─── State ──────────────────────────────────────────────────────────────────
+let player = {};
+
+// ─── DOM refs ───────────────────────────────────────────────────────────────
+const outputEl  = document.getElementById('output');
+const statusEl  = document.getElementById('status');
+const buttonsEl = document.getElementById('buttons');
+const textInput = document.getElementById('text-input');
+
+// ─── Utilities ──────────────────────────────────────────────────────────────
+const ri = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+
+function print(text = '', cls = '') {
+  const d = document.createElement('div');
+  d.className = 'line' + (cls ? ' ' + cls : '');
+  d.textContent = text;
+  outputEl.appendChild(d);
+  outputEl.scrollTop = outputEl.scrollHeight;
+}
+
+function slowPrint(text, cls = '', delay = 22) {
+  return new Promise(resolve => {
+    const d = document.createElement('div');
+    d.className = 'line' + (cls ? ' ' + cls : '');
+    outputEl.appendChild(d);
+    let i = 0;
+    const t = setInterval(() => {
+      if (i < text.length) {
+        d.textContent += text[i++];
+        outputEl.scrollTop = outputEl.scrollHeight;
+      } else {
+        clearInterval(t);
+        resolve();
+      }
+    }, delay);
+  });
+}
+
+function updateStatus() {
+  if (!player.name) { statusEl.innerHTML = ''; return; }
+  const pct = player.hp / player.maxHp;
+  const filled = Math.round(pct * 15);
+  const bar = '█'.repeat(filled) + '░'.repeat(15 - filled);
+  const hpColor = pct > 0.5 ? '#50e080' : pct > 0.25 ? '#f0c040' : '#ff5555';
+  statusEl.innerHTML = `
+    <span class="stat">
+      <span class="stat-label">HP</span>
+      <span class="hp-bar" style="color:${hpColor}">[${bar}]</span>
+      <span style="color:${hpColor}">${player.hp}/${player.maxHp}</span>
+    </span>
+    <span class="stat"><span class="stat-label">⚔️</span><span class="c-blue">${player.atk}</span></span>
+    <span class="stat"><span class="stat-label">💰</span><span class="c-gold">${player.gold}G</span></span>
+    <span class="stat"><span class="stat-label">📍</span><span>B${player.floor}F</span></span>
+  `;
+}
+
+function waitForText(placeholder = '입력...') {
+  return new Promise(resolve => {
+    textInput.placeholder = placeholder;
+    textInput.style.display = 'block';
+    textInput.value = '';
+    textInput.focus();
+    function onKey(e) {
+      if (e.key === 'Enter') {
+        textInput.removeEventListener('keydown', onKey);
+        textInput.style.display = 'none';
+        resolve(textInput.value.trim());
+      }
+    }
+    textInput.addEventListener('keydown', onKey);
+  });
+}
+
+function waitForChoice(choices) {
+  return new Promise(resolve => {
+    buttonsEl.innerHTML = '';
+    choices.forEach(({label, value, cls}) => {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      if (cls) btn.classList.add(cls);
+      btn.onclick = () => { buttonsEl.innerHTML = ''; resolve(value); };
+      buttonsEl.appendChild(btn);
+    });
+  });
+}
+
+// ─── Battle ─────────────────────────────────────────────────────────────────
+async function battle(monster) {
+  let mHp = monster.hp;
+  print();
+  await slowPrint(`  ⚔️  ${monster.name} 등장!`, 'c-gold');
+
+  while (true) {
+    print();
+    print(`  [${monster.name}]  HP: ${mHp}`, 'c-blue');
+
+    const choice = await waitForChoice([
+      {label:'⚔️ 공격',         value:'1'},
+      {label:'💥 강공격 (50%)', value:'2'},
+      {label:'🏃 도망',         value:'3'},
+    ]);
+
+    if (choice === '1') {
+      const dmg = Math.max(1, player.atk + ri(-2, 2));
+      mHp -= dmg;
+      await slowPrint(`  → ${dmg} 데미지!`, 'c-green');
+    } else if (choice === '2') {
+      if (Math.random() < 0.5) {
+        const dmg = player.atk * 2;
+        mHp -= dmg;
+        await slowPrint(`  → 💥 크리티컬! ${dmg} 데미지!`, 'c-green');
+      } else {
+        await slowPrint('  → 빗나갔다...', 'c-dim');
+      }
+    } else {
+      if (Math.random() < 0.4) {
+        await slowPrint('  → 도망쳤다!', 'c-blue');
+        return 'escape';
+      } else {
+        await slowPrint('  → 도망 실패!', 'c-red');
+      }
+    }
+
+    if (mHp <= 0) {
+      await slowPrint(`  ✅ ${monster.name} 처치! +${monster.gold}G 획득!`, 'c-green');
+      player.gold += monster.gold;
+      updateStatus();
+      return 'win';
+    }
+
+    // 몬스터 반격
+    if (Math.random() < 0.1) {
+      await slowPrint(`  ← ${monster.name}의 공격이 빗나갔다!`, 'c-dim');
+    } else {
+      const mDmg = Math.max(1, monster.atk + ri(-2, 2));
+      player.hp = Math.max(0, player.hp - mDmg);
+      updateStatus();
+      await slowPrint(`  ← ${monster.name}의 반격! -${mDmg} HP`, 'c-red');
+    }
+
+    if (player.hp <= 0) return 'dead';
+  }
+}
+
+// ─── Shop ────────────────────────────────────────────────────────────────────
+async function shop() {
+  print();
+  await slowPrint('  🏪 상인: 어서오세요~ 뭘 드릴까요?', 'c-gold');
+
+  while (true) {
+    print();
+    print(`  보유 골드: ${player.gold}G`, 'c-gold');
+    const choices = ITEMS.map((item, i) => ({
+      label: `${item.name}  ${item.price}G`,
+      value: String(i + 1),
+    }));
+    choices.push({label: '🚪 나가기', value: '0'});
+    const choice = await waitForChoice(choices);
+
+    if (choice === '0') break;
+    const item = ITEMS[parseInt(choice) - 1];
+    if (player.gold < item.price) {
+      await slowPrint('  골드가 부족합니다!', 'c-red');
+      continue;
+    }
+    player.gold -= item.price;
+    if (item.type === 'heal') {
+      player.hp = Math.min(player.maxHp, player.hp + item.value);
+      await slowPrint(`  HP +${item.value} 회복! (현재 ${player.hp})`, 'c-green');
+    } else if (item.type === 'attack') {
+      player.atk += item.value;
+      await slowPrint(`  공격력 +${item.value}! (현재 ${player.atk})`, 'c-green');
+    } else {
+      player.atk += item.value;
+      await slowPrint(`  ${item.name} 장착! 공격력 +${item.value}!`, 'c-green');
+    }
+    updateStatus();
+  }
+}
+
+// ─── Main game loop ──────────────────────────────────────────────────────────
+async function dungeon() {
+  outputEl.innerHTML = '';
+  statusEl.innerHTML = '';
+  player = {};
+
+  print('═'.repeat(44), 'c-gray');
+  await slowPrint('      ⚔️   던전 탈출 RPG   ⚔️', 'c-gold');
+  print('═'.repeat(44), 'c-gray');
+  print();
+  await slowPrint('  어둠의 던전에 갇혔다. 보스를 쓰러트리고');
+  await slowPrint('  5층을 탈출하라!');
+  print();
+  print('  캐릭터 이름을 입력하세요:', 'c-dim');
+
+  let name = await waitForText('캐릭터 이름 (Enter = 용사)');
+  if (!name) name = '용사';
+
+  player = {name, hp:50, maxHp:50, atk:10, gold:10, floor:1};
+  updateStatus();
+  print();
+  await slowPrint(`  ${name}의 모험이 시작된다...`, 'c-gold');
+
+  gameLoop: while (player.floor <= 5) {
+
+    // ── 보스 층 ──
+    if (player.floor === 5) {
+      print();
+      await slowPrint('  으르렁... 보스 방에 도달했다!', 'c-red');
+      await waitForChoice([{label:'💀 보스와 대결!', value:'ok', cls:'btn-danger'}]);
+
+      const result = await battle({...BOSS});
+      if (result === 'win') {
+        print();
+        await slowPrint(`  🎉 ${player.name}은 던전을 탈출했다!`, 'c-green');
+        await slowPrint(`  최종 ATK ${player.atk}  HP ${player.hp}/${player.maxHp}  골드 ${player.gold}G`, 'c-green');
+      } else {
+        print();
+        await slowPrint(`  💀 ${player.name}은 쓰러졌다... GAME OVER`, 'c-red');
+      }
+      print('═'.repeat(44), 'c-gray');
+      break gameLoop;
+    }
+
+    // ── 일반 층 ──
+    print();
+    print(`  B${player.floor}F — 무엇을 할까?`, 'c-gold');
+    const choice = await waitForChoice([
+      {label:'🚶 앞으로 이동',    value:'1'},
+      {label:'🏪 상점 방문',      value:'2'},
+      {label:'🛌 HP 회복 (20G)', value:'3'},
+    ]);
+
+    if (choice === '1') {
+      const pool = MONSTERS.slice(0, player.floor + 1);
+      const monster = {...pool[ri(0, pool.length - 1)]};
+      const result = await battle(monster);
+      if (result === 'dead') {
+        print();
+        await slowPrint(`  💀 ${player.name}은 쓰러졌다... GAME OVER`, 'c-red');
+        print('═'.repeat(44), 'c-gray');
+        break gameLoop;
+      }
+      if (result === 'win') {
+        player.floor++;
+        await slowPrint(`  계단을 발견했다. B${player.floor}F로 이동한다.`, 'c-blue');
+        updateStatus();
+      }
+    } else if (choice === '2') {
+      await shop();
+    } else {
+      if (player.gold >= 20) {
+        player.gold -= 20;
+        player.hp = Math.min(player.maxHp, player.hp + 15);
+        updateStatus();
+        await slowPrint(`  🛌 잠시 휴식... HP +15 (현재 ${player.hp})`, 'c-green');
+      } else {
+        await slowPrint('  골드가 부족합니다!', 'c-red');
+      }
+    }
+
+    if (player.hp <= 0) {
+      print();
+      await slowPrint(`  💀 ${player.name}은 쓰러졌다... GAME OVER`, 'c-red');
+      print('═'.repeat(44), 'c-gray');
+      break gameLoop;
+    }
+  }
+
+  print();
+  await waitForChoice([{label:'🔄 다시 플레이', value:'r', cls:'btn-confirm'}]);
+  dungeon();
+}
+
+dungeon();
+</script>
 </body>
 </html>
