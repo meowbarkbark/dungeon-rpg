@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚔️ 던전 탈출 RPG</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d0d;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 700px; width: 100%; }
+    h1 { font-size: 2rem; color: #f0c040; text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 32px; }
+    .divider { border: none; border-top: 1px solid #333; margin: 24px 0; }
+    h2 { color: #f0c040; font-size: 1.1rem; margin-bottom: 12px; }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .monster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .monster {
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .monster .name { font-weight: bold; color: #ff6b6b; margin-bottom: 6px; }
+    .monster .stat { color: #aaa; font-size: 0.85rem; }
+    .boss { border-color: #f0c040; }
+    .boss .name { color: #f0c040; }
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px 14px;
+    }
+    .item .iname { color: #6bc5ff; }
+    .item .price { color: #f0c040; }
+    .how-to {
+      line-height: 1.8;
+      color: #bbb;
+    }
+    .how-to li { margin-left: 20px; }
+    .footer { text-align: center; color: #555; font-size: 0.8rem; margin-top: 40px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚔️ 던전 탈출 RPG</h1>
+    <p class="subtitle">어둠의 던전에서 보스를 쓰러트리고 탈출하라!</p>
+
+    <div class="card">
+      <h2>📖 게임 소개</h2>
+      <p class="how-to">
+        Python으로 만든 텍스트 기반 던전 탈출 RPG입니다.<br>
+        총 5개의 층을 돌파하고 최종 보스를 처치하면 승리합니다.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>🎮 플레이 방법</h2>
+      <ul class="how-to">
+        <li>각 층에서 <strong>전진 / 상점 방문 / 휴식</strong> 중 선택</li>
+        <li>전투 중 <strong>공격 / 강공격 / 도망</strong> 선택 가능</li>
+        <li>강공격은 50% 확률로 2배 데미지</li>
+        <li>상점에서 포션·무기 구매 가능</li>
+        <li>5층에서 던전 보스 격파 시 탈출 성공!</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>👾 몬스터</h2>
+      <div class="monster-grid">
+        <div class="monster">
+          <div class="name">슬라임</div>
+          <div class="stat">HP: 10 / ATK: 3</div>
+          <div class="stat">골드: 5G | 난이도: 약함</div>
+        </div>
+        <div class="monster">
+          <div class="name">고블린</div>
+          <div class="stat">HP: 18 / ATK: 6</div>
+          <div class="stat">골드: 12G | 난이도: 보통</div>
+        </div>
+        <div class="monster">
+          <div class="name">해골 전사</div>
+          <div class="stat">HP: 25 / ATK: 9</div>
+          <div class="stat">골드: 20G | 난이도: 강함</div>
+        </div>
+        <div class="monster">
+          <div class="name">독거미</div>
+          <div class="stat">HP: 20 / ATK: 12</div>
+          <div class="stat">골드: 18G | 난이도: 강함</div>
+        </div>
+        <div class="monster">
+          <div class="name">어둠의 마법사</div>
+          <div class="stat">HP: 30 / ATK: 15</div>
+          <div class="stat">골드: 35G | 난이도: 매우 강함</div>
+        </div>
+        <div class="monster boss">
+          <div class="name">💀 심연의 군주</div>
+          <div class="stat">HP: 80 / ATK: 20</div>
+          <div class="stat">골드: 100G | 최종 보스</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🏪 상점 아이템</h2>
+      <div class="item-list">
+        <div class="item"><span class="iname">💊 회복 포션</span><span>HP +20</span><span class="price">15G</span></div>
+        <div class="item"><span class="iname">⚡ 강화 포션</span><span>ATK +5</span><span class="price">25G</span></div>
+        <div class="item"><span class="iname">🗡️ 녹슨 검</span><span>ATK +8</span><span class="price">20G</span></div>
+        <div class="item"><span class="iname">🗡️ 강철 검</span><span>ATK +15</span><span class="price">40G</span></div>
+      </div>
+    </div>
+
+    <p class="footer">Built with Python · Deployed on Vercel</p>
+  </div>
+</body>
+</html>
